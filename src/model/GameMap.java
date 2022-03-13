@@ -15,7 +15,7 @@ public class GameMap extends JPanel {
     private int xSize;
     private int ySize;
     private BufferedImage image;
-    private BufferedImage playerimage;
+    private BufferedImage playerImage;
 
     public GameMap(char[][] gameBoard, int playerPositionX, int playerPositionY, int playerHp, int xSize, int ySize) {
         this.gameBoard = gameBoard;
@@ -27,15 +27,15 @@ public class GameMap extends JPanel {
         setPlayerImage();
     }
 
-
     private void setPlayerImage() {
         try{
-           playerimage= ImageIO.read(new File(UsedPaths.PLAYER_PATH));
+           playerImage= ImageIO.read(new File(UsedPaths.PLAYER_PATH));
         }catch (IOException e){
             e.printStackTrace();
             System.out.println("Could not find the Player image");
         }
     }
+
     private void changeCellPath(char cell){
        try{
            switch (cell){
@@ -51,14 +51,6 @@ public class GameMap extends JPanel {
        }
 
     }
-    public void paintMapConsole(){
-        for (int i=0;i<xSize;i++){
-            for (int j=0; j<ySize;j++){
-                System.out.print(gameBoard[i][j]);
-            }
-            System.out.println();
-        }
-    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -70,7 +62,7 @@ public class GameMap extends JPanel {
                 changeCellPath(gameBoard[j][i]);
                 g.drawImage(image,i*cellWidth,j*cellHeight,cellWidth,cellHeight,null);
                 if(j==playerPositionX && i==playerPositionY){
-                    g.drawImage(playerimage,i*cellWidth,j*cellHeight,cellWidth,cellHeight,null);
+                    g.drawImage(playerImage,i*cellWidth,j*cellHeight,cellWidth,cellHeight,null);
                 }
             }
         }
@@ -105,6 +97,7 @@ public class GameMap extends JPanel {
         this.playerPositionY=y;
         this.repaint();
     }
+
     private int getStartX(){
         for (int i=0;i<xSize;i++){
             for (int j=0; j<ySize;j++){
@@ -113,6 +106,7 @@ public class GameMap extends JPanel {
         }
         return 0;
     }
+
     private int getStartY(){
         for (int i=0;i<xSize;i++){
             for (int j=0; j<ySize;j++){

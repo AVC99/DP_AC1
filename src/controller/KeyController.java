@@ -28,9 +28,7 @@ public class KeyController implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()){
-            case W, UP ->  {
-                this.view.moveIsaac("up");
-            }
+            case W, UP -> this.view.moveIsaac("up");
             case A, LEFT -> this.view.moveIsaac("left");
             case S, DOWN -> this.view.moveIsaac("down");
             case D, RIGHT -> this.view.moveIsaac("right");

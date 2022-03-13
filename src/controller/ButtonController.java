@@ -15,9 +15,7 @@ public class ButtonController implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()){
-            case "UP"->{
-                this.view.moveIsaac("up");
-            }
+            case "UP"-> this.view.moveIsaac("up");
             case "DOWN"-> this.view.moveIsaac("down");
             case "LEFT"-> this.view.moveIsaac("left");
             case "RIGHT"-> this.view.moveIsaac("right");

@@ -1,6 +1,5 @@
 package view;
 
-import model.GameMap;
 
 import javax.swing.*;
 import java.awt.*;

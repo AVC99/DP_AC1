@@ -3,7 +3,6 @@ package view;
 import controller.ButtonController;
 import controller.KeyController;
 import model.GameMap;
-import model.MapDAO;
 import model.UsedPaths;
 
 import javax.swing.*;
