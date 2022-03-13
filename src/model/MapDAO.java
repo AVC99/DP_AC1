@@ -3,6 +3,7 @@ package model;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 public class MapDAO {
     public MapDAO() {
@@ -17,12 +18,13 @@ public class MapDAO {
         GameMap gameMap= null;
         try{
             String mapText= new String(Files.readAllBytes(Path.of(UsedPaths.MAP_PATH)));
-            String[] lines= mapText.split("\n");
-            int sizeX=Integer.parseInt(lines[0]);
+           String[] lines= mapText.split("\n");
+           int sizeX=Integer.parseInt(lines[0]);
             int sizeY= Integer.parseInt(lines[1]);
             int playerPositionX=0;
             int playerPositionY=0;
             char[][] gameBoard = new char[sizeX][sizeY];
+            ArrayList<Enemy> enemyList= new ArrayList<>();
             for(int i=2;i<lines.length;i++){//Filas
                 int j=0;
                 for (char c: lines[i].toCharArray()){//letra individual
@@ -30,11 +32,15 @@ public class MapDAO {
                     if(c=='S'){
                         playerPositionX=i-2;
                         playerPositionY=j;
+                    }else if(c=='|'){
+                        enemyList.add(new Fly(Enemy.FLY_DMG,i-2,j));
+                    }else if (c=='-'){
+                        enemyList.add(new Spider(Enemy.SPIDER_DMG,i-2,j));
                     }
                     j++;
                 }
             }
-            gameMap= new GameMap(gameBoard,playerPositionX,playerPositionY,10,sizeX,sizeY);
+            gameMap= new GameMap(gameBoard,playerPositionX,playerPositionY,10,sizeX,sizeY,enemyList);
 
         }catch (IOException e){
             e.printStackTrace();

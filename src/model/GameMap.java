@@ -6,18 +6,27 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class GameMap extends JPanel {
     private char[][] gameBoard;
     private int playerPositionX;
     private int playerPositionY;
     private int playerHp;
-    private int xSize;
-    private int ySize;
+    private final int xSize;
+    private final int ySize;
     private BufferedImage image;
     private BufferedImage playerImage;
+    private BufferedImage spiderImage;
+    private BufferedImage flyImage;
+    private ArrayList<Enemy> enemyList;
+    public static final int SPIKE_DAMAGE=1;
 
-    public GameMap(char[][] gameBoard, int playerPositionX, int playerPositionY, int playerHp, int xSize, int ySize) {
+    public ArrayList<Enemy> getEnemyList() {
+        return enemyList;
+    }
+
+    public GameMap(char[][] gameBoard, int playerPositionX, int playerPositionY, int playerHp, int xSize, int ySize, ArrayList<Enemy>enemyList) {
         this.gameBoard = gameBoard;
         this.playerPositionX = playerPositionX;
         this.playerPositionY = playerPositionY;
@@ -25,6 +34,9 @@ public class GameMap extends JPanel {
         this.xSize = xSize;
         this.ySize = ySize;
         setPlayerImage();
+        setFlyImage();
+        setSpiderImage();
+        this.enemyList=enemyList;
     }
 
     /**
@@ -33,6 +45,22 @@ public class GameMap extends JPanel {
     private void setPlayerImage() {
         try{
            playerImage= ImageIO.read(new File(UsedPaths.PLAYER_PATH));
+        }catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Could not find the Player image");
+        }
+    }
+    private void setSpiderImage() {
+        try{
+            spiderImage= ImageIO.read(new File(UsedPaths.SPIDER_PATH));
+        }catch (IOException e){
+            e.printStackTrace();
+            System.out.println("Could not find the Player image");
+        }
+    }
+    private void setFlyImage() {
+        try{
+           flyImage= ImageIO.read(new File(UsedPaths.FLY_PATH));
         }catch (IOException e){
             e.printStackTrace();
             System.out.println("Could not find the Player image");
@@ -47,10 +75,11 @@ public class GameMap extends JPanel {
        try{
            switch (cell){
                case'#'-> image=ImageIO.read(new File(UsedPaths.WALL_PATH));
-               case ' '-> image=ImageIO.read(new File(UsedPaths.EMPTY_PATH));
+               case ' ', '-', '|' -> image=ImageIO.read(new File(UsedPaths.EMPTY_PATH));
                case 'X'-> image=ImageIO.read(new File(UsedPaths.SPIKES_PATH));
                case 'S'-> image=ImageIO.read(new File(UsedPaths.START_PATH));
                case 'W'-> image=ImageIO.read(new File(UsedPaths.VICTORY_PATH));
+
            }
        }catch (IOException e){
            e.printStackTrace();
@@ -72,6 +101,13 @@ public class GameMap extends JPanel {
             for (int j=0; j<ySize;j++){
                 changeCellPath(gameBoard[j][i]);
                 g.drawImage(image,i*cellWidth,j*cellHeight,cellWidth,cellHeight,null);
+                for(Enemy e: enemyList){
+                    if(j==e.getXPosition() && i==e.getYPosition()){
+                        if(e instanceof Fly){
+                            g.drawImage(flyImage,i*cellWidth,j*cellHeight,cellWidth,cellHeight,null);
+                        }else g.drawImage(spiderImage,i*cellWidth,j*cellHeight,cellWidth,cellHeight,null);
+                    }
+                }
                 if(j==playerPositionX && i==playerPositionY){
                     g.drawImage(playerImage,i*cellWidth,j*cellHeight,cellWidth,cellHeight,null);
                 }
@@ -172,6 +208,14 @@ public class GameMap extends JPanel {
     }
 
     /**
+     * Function that makes the player loose hp if they collide with an enemy
+     * @param enemy enemy the player colides
+     */
+    public void takeEnemyDmg(Enemy enemy){
+        this.playerHp-=enemy.getDamage();
+    }
+
+    /**
      * Function that resets Isaac to the start
      */
     public void setIsaacToStart(){
@@ -180,4 +224,6 @@ public class GameMap extends JPanel {
         this.playerHp=10;
         repaint();
     }
+
+
 }

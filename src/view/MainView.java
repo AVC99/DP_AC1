@@ -2,20 +2,17 @@ package view;
 
 import controller.ButtonController;
 import controller.KeyController;
-import model.GameMap;
-import model.UsedPaths;
+import model.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.LinkedList;
 
 
 public class MainView extends JFrame {
     private GameMap gameMap;
     private HpBar hpBar;
-    JButton upButton;
-    JButton leftButton;
-    JButton downButton;
-    JButton rightButton;
+    private LinkedList<Thread> threadList;
 
 
     public MainView(GameMap gameMap) {
@@ -25,6 +22,7 @@ public class MainView extends JFrame {
         configNorth();
         configSouth();
         configKeys();
+        startEnemies();
         configWindow();
     }
 
@@ -43,7 +41,7 @@ public class MainView extends JFrame {
         setSize(700, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setTitle("Scuffed TBOI");
+        setTitle("Scuffed TBOI 1.0");
         setVisible(true);
     }
 
@@ -51,7 +49,7 @@ public class MainView extends JFrame {
      * Function that configures the center of the window
      */
     private void configCenter() {
-       add(new GameMap(this.gameMap.getGameBoard(),this.gameMap.getPlayerPositionX(),this.gameMap.getPlayerPositionY(),this.gameMap.getPlayerHp(),this.gameMap.getXSize(), this.gameMap.getYSize()),BorderLayout.CENTER);
+       add(new GameMap(this.gameMap.getGameBoard(),this.gameMap.getPlayerPositionX(),this.gameMap.getPlayerPositionY(),this.gameMap.getPlayerHp(),this.gameMap.getXSize(), this.gameMap.getYSize(),this.gameMap.getEnemyList()),BorderLayout.CENTER);
         add(gameMap);
     }
 
@@ -74,28 +72,28 @@ public class MainView extends JFrame {
      */
     private void configureButtons(JPanel southPanel, GridBagConstraints gbc) {
         gbc.gridx=1; gbc.gridy=0;
-        upButton= new JButton(new ImageIcon(UsedPaths.UP_ARROW_PATH));
+        JButton upButton = new JButton(new ImageIcon(UsedPaths.UP_ARROW_PATH));
         upButton.setActionCommand("UP");
         upButton.addActionListener(new ButtonController(this));
         upButton.setFocusable(false);
         southPanel.add(upButton, gbc);
 
         gbc.gridx=0;gbc.gridy=1;
-        leftButton=new JButton(new ImageIcon(UsedPaths.LEFT_ARROW_PATH));
+        JButton leftButton = new JButton(new ImageIcon(UsedPaths.LEFT_ARROW_PATH));
         leftButton.setActionCommand("LEFT");
         leftButton.addActionListener(new ButtonController(this));
         leftButton.setFocusable(false);
         southPanel.add(leftButton,gbc);
 
         gbc.gridx=1;gbc.gridy=1;
-        downButton=new JButton(new ImageIcon(UsedPaths.DOWN_ARROW_PATH));
+        JButton downButton = new JButton(new ImageIcon(UsedPaths.DOWN_ARROW_PATH));
         downButton.setActionCommand("DOWN");
         downButton.addActionListener(new ButtonController(this));
         downButton.setFocusable(false);
         southPanel.add(downButton,gbc);
 
         gbc.gridx=2;gbc.gridy=1;
-        rightButton=new JButton(new ImageIcon(UsedPaths.RIGHT_ARROW_PATH));
+        JButton rightButton = new JButton(new ImageIcon(UsedPaths.RIGHT_ARROW_PATH));
         rightButton.setActionCommand("RIGHT");
         rightButton.addActionListener(new ButtonController(this));
         rightButton.setFocusable(false);
@@ -157,36 +155,68 @@ public class MainView extends JFrame {
     private void actuallyMove(int gotoX, int gotoY) {
         gameMap.setPlayerPosition(gotoX, gotoY);
         if(hasIsaacWon(gotoX, gotoY)){
-            System.out.println("isaac won");
             createVictoryPane();
         }else{
-
             if(isSpikeCell(gotoX, gotoY)){
                 isaacTakesDmg();
             }
-            if(gameMap.getPlayerHp()<=0){
+            moveIntoEnemyCell(gotoX, gotoY);
+            if(hasIsaacLost()){
                 createLosingPane();
             }
         }
     }
 
     /**
+     * Function that tells if the player has lost all his hp
+     * @return boolean
+     */
+    private boolean hasIsaacLost(){
+        return gameMap.getPlayerHp() <= 0;
+    }
+
+    /**
+     * Function that checks if isaac has moved into an enemy cell and if it has makes the player take dmg
+     * @param gotoX go-to x
+     * @param gotoY go-to y
+     */
+    private void moveIntoEnemyCell(int gotoX, int gotoY) {
+        for(Enemy e: gameMap.getEnemyList()){
+            if(gotoX==e.getXPosition()&&gotoY==e.getYPosition()){
+                takeEnemyDamage(e);
+            }
+        }
+    }
+
+    /**
+     * Funtion that makes the player take damage form an enemy
+     * @param e enemy
+     */
+    private void takeEnemyDamage(Enemy e) {
+        gameMap.takeEnemyDmg(e);
+        hpBar.setValue(gameMap.getPlayerHp());
+    }
+
+    /**
      * Function that creates the victory Pane
      */
     private void createVictoryPane() {
+        stopEnemies();
         JOptionPane.showMessageDialog(null,"WINNER WINNER CHICKEN DINNER","Winner",JOptionPane.ERROR_MESSAGE);
         gameMap.setIsaacToStart();
         hpBar.setValue(10);
-
+        startEnemies();
     }
 
     /**
      * Function that creates the loss panel
      */
     private void createLosingPane(){
+        stopEnemies();
         JOptionPane.showMessageDialog(null,"Unlucky you died L2P","You Lost",JOptionPane.ERROR_MESSAGE);
         gameMap.setIsaacToStart();
         hpBar.setValue(10);
+        startEnemies();
     }
 
     /**
@@ -214,8 +244,19 @@ public class MainView extends JFrame {
      * @return true/false
      */
     private boolean canIsaacMove(int x, int y){
-       if( x>0 && x<=16 && gameMap.getGameBoard()[x][y]!='#') return true;
+       if( x>0 && x<=16 && y>0 && y<=16 && gameMap.getGameBoard()[x][y]!='#') return true;
        else return  false;
+    }
+
+    /**
+     * Function that returns if the enemy can move to the desired position
+     * @param x x
+     * @param y y
+     * @return true/false
+     */
+    public boolean canEnemyMove(int x, int y){
+        if( x>0 && x<16 && y>0 && y<16 && this.gameMap.getGameBoard()[x][y]!='#') return true;
+        else return  false;
     }
 
     /**
@@ -227,4 +268,48 @@ public class MainView extends JFrame {
     private boolean hasIsaacWon(int x,int y){
         return gameMap.getGameBoard()[x][y] == 'W';
     }
+
+    /**
+     * Funtion that moves the selected enemy and repaints the view
+     * @param enemy selected enemy
+     */
+    public void moveEnemy(Enemy enemy) {
+        if(isIsaacThere(enemy.getNextX(), enemy.getNextY())){
+            takeEnemyDamage(enemy);
+            hpBar.repaint();
+        }
+        enemy.move();
+
+        this.gameMap.repaint();
+        if(hasIsaacLost())createLosingPane();
+    }
+
+    private boolean isIsaacThere(int x, int y) {
+        if(y==gameMap.getPlayerPositionY() && x==gameMap.getPlayerPositionX()){
+          return true;
+        }else return false;
+    }
+
+    /**
+     * Function that starts a new thread for all enemies and starts the thread
+     */
+    private void startEnemies(){
+        this.threadList= new LinkedList<>();
+            for (Enemy e : this.gameMap.getEnemyList()) {
+                Thread t = new Thread(new EnemyThread(this, e));
+                t.start();
+               this.threadList.add(t);
+            }
+
+    }
+
+    /**
+     * Function that stops enemies from moving
+     */
+    private void stopEnemies(){
+        for (Thread t : this.threadList) {
+            t.stop();
+        }
+    }
+
 }
