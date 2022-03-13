@@ -12,10 +12,10 @@ import java.awt.*;
 public class MainView extends JFrame {
     private GameMap gameMap;
     private HpBar hpBar;
-    JButton upButton;
-    JButton leftButton;
-    JButton downButton;
-    JButton rightButton;
+    private JButton upButton;
+    private JButton leftButton;
+    private JButton downButton;
+    private JButton rightButton;
 
 
     public MainView(GameMap gameMap) {
