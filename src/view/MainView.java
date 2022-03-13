@@ -28,11 +28,17 @@ public class MainView extends JFrame {
         configWindow();
     }
 
+    /**
+     * Function that configures all the keys
+     */
     private void configKeys() {
         this.addKeyListener(new KeyController(this));
         setFocusable(true);
     }
 
+    /**
+     * Function that configures the entire window
+     */
     private void configWindow() {
         setSize(700, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -41,11 +47,17 @@ public class MainView extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Function that configures the center of the window
+     */
     private void configCenter() {
-       add(new GameMap(this.gameMap.getGameBoard(),this.gameMap.getPlayerPositionX(),this.gameMap.getPlayerPositionY(),this.gameMap.getPlayerHp(),this.gameMap.getxSize(), this.gameMap.getySize()),BorderLayout.CENTER);
+       add(new GameMap(this.gameMap.getGameBoard(),this.gameMap.getPlayerPositionX(),this.gameMap.getPlayerPositionY(),this.gameMap.getPlayerHp(),this.gameMap.getXSize(), this.gameMap.getYSize()),BorderLayout.CENTER);
         add(gameMap);
     }
 
+    /**
+     * Function that configures the south of the window
+     */
     private void configSouth() {
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new GridBagLayout());
@@ -55,6 +67,11 @@ public class MainView extends JFrame {
         getContentPane().add(southPanel,BorderLayout.SOUTH);
     }
 
+    /**
+     * Funtion that configures the buttons on the south panel
+     * @param southPanel south panel
+     * @param gbc GridBagConstraints
+     */
     private void configureButtons(JPanel southPanel, GridBagConstraints gbc) {
         gbc.gridx=1; gbc.gridy=0;
         upButton= new JButton(new ImageIcon(UsedPaths.UP_ARROW_PATH));
@@ -85,11 +102,18 @@ public class MainView extends JFrame {
         southPanel.add(rightButton,gbc);
     }
 
+    /**
+     * Function that configures the north portion of the window
+     */
     private void configNorth() {
         hpBar= new HpBar();
         add(hpBar, BorderLayout.NORTH);
     }
 
+    /**
+     * Function that receives the button/key information to move
+     * @param direction direction desired to move Isaac
+     */
     public void moveIsaac(String direction){
         int gotoX;
         int gotoY;
@@ -125,6 +149,11 @@ public class MainView extends JFrame {
         }
     }
 
+    /**
+     * Function that moves Isaac to the desired position
+     * @param gotoX x Position to move
+     * @param gotoY y Position to move
+     */
     private void actuallyMove(int gotoX, int gotoY) {
         gameMap.setPlayerPosition(gotoX, gotoY);
         if(hasIsaacWon(gotoX, gotoY)){
@@ -141,6 +170,9 @@ public class MainView extends JFrame {
         }
     }
 
+    /**
+     * Function that creates the victory Pane
+     */
     private void createVictoryPane() {
         JOptionPane.showMessageDialog(null,"WINNER WINNER CHICKEN DINNER","Winner",JOptionPane.ERROR_MESSAGE);
         gameMap.setIsaacToStart();
@@ -148,27 +180,50 @@ public class MainView extends JFrame {
 
     }
 
+    /**
+     * Function that creates the loss panel
+     */
     private void createLosingPane(){
         JOptionPane.showMessageDialog(null,"Unlucky you died L2P","You Lost",JOptionPane.ERROR_MESSAGE);
         gameMap.setIsaacToStart();
         hpBar.setValue(10);
     }
 
+    /**
+     * Function that reduces the player hp when Isaac takes dmg
+     */
     private void isaacTakesDmg() {
         gameMap.takeSpikeDmg();
         hpBar.setValue(gameMap.getPlayerHp());
-
     }
 
+    /**
+     * Function that tells if the go-to position has spikes in it
+     * @param x x go-to position
+     * @param y y go-to position
+     * @return true/false
+     */
     private boolean isSpikeCell(int x, int y) {
         return gameMap.getGameBoard()[x][y] == 'X';
     }
 
+    /**
+     * Function that tells if the go-to is not a wall or off the map
+     * @param x x go-to position
+     * @param y y go-to position
+     * @return true/false
+     */
     private boolean canIsaacMove(int x, int y){
        if( x>0 && x<=16 && gameMap.getGameBoard()[x][y]!='#') return true;
        else return  false;
     }
 
+    /**
+     * Function that returns if Isaac has won the Game
+     * @param x x go-to position
+     * @param y y go-to position
+     * @return true/false
+     */
     private boolean hasIsaacWon(int x,int y){
         return gameMap.getGameBoard()[x][y] == 'W';
     }

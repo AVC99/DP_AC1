@@ -1,4 +1,3 @@
-import model.GameMap;
 import model.MapDAO;
 import view.MainView;
 

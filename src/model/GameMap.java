@@ -27,6 +27,9 @@ public class GameMap extends JPanel {
         setPlayerImage();
     }
 
+    /**
+     * Function that sets the buffered image to the player image
+     */
     private void setPlayerImage() {
         try{
            playerImage= ImageIO.read(new File(UsedPaths.PLAYER_PATH));
@@ -36,6 +39,10 @@ public class GameMap extends JPanel {
         }
     }
 
+    /**
+     * Function that changes the path of the cell depending of their type
+     * @param cell selected cell of the map
+     */
     private void changeCellPath(char cell){
        try{
            switch (cell){
@@ -52,6 +59,10 @@ public class GameMap extends JPanel {
 
     }
 
+    /**
+     * Function that iterates the map and paints it according to each cell
+     * @param g Graphics
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -68,36 +79,69 @@ public class GameMap extends JPanel {
         }
     }
 
+    /**
+     * Getter of the GameBoard
+     * @return Game Board
+     */
     public char[][] getGameBoard() {
         return gameBoard;
     }
 
+    /**
+     * Getter of the playerPositionX
+     * @return playerPositionX
+     */
     public int getPlayerPositionX() {
         return playerPositionX;
     }
 
+    /**
+     * Getter of the playerPositionY
+     * @return playerPositionY
+     */
     public int getPlayerPositionY() {
         return playerPositionY;
     }
 
+    /**
+     * Getter of the playerHp
+     * @return playerHp
+     */
     public int getPlayerHp() {
         return playerHp;
     }
 
-    public int getxSize() {
+    /**
+     * Getter of the Map x size
+     * @return Map x size
+     */
+    public int getXSize() {
         return xSize;
     }
 
-    public int getySize() {
+    /**
+     * Getter of the Map y size
+     * @return Map y size
+     */
+    public int getYSize() {
         return ySize;
     }
 
+    /**
+     * Setter for the player positon
+     * @param x x position on the map
+     * @param y y position on the map
+     */
     public void setPlayerPosition(int x, int y) {
         this.playerPositionX=x;
         this.playerPositionY=y;
         this.repaint();
     }
 
+    /**
+     * Getter that gets the x starting position
+     * @return x starting position
+     */
     private int getStartX(){
         for (int i=0;i<xSize;i++){
             for (int j=0; j<ySize;j++){
@@ -107,6 +151,10 @@ public class GameMap extends JPanel {
         return 0;
     }
 
+    /**
+     * Getter that gets the y starting position
+     * @return y starting position
+     */
     private int getStartY(){
         for (int i=0;i<xSize;i++){
             for (int j=0; j<ySize;j++){
@@ -116,10 +164,16 @@ public class GameMap extends JPanel {
         return 0;
     }
 
+    /**
+     * Function that if the player steps on a spike they loose 1 hp
+     */
     public void takeSpikeDmg() {
         this.playerHp-=1;
     }
 
+    /**
+     * Function that resets Isaac to the start
+     */
     public void setIsaacToStart(){
         this.playerPositionX=getStartX();
         this.playerPositionY=getStartY();

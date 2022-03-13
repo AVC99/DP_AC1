@@ -25,6 +25,10 @@ public class KeyController implements KeyListener {
 
     }
 
+    /**
+     * Function that controls the actions that have to be made if a key is pressed
+     * @param e event
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()){

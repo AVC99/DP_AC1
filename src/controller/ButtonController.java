@@ -12,6 +12,10 @@ public class ButtonController implements ActionListener {
         this.view = view;
     }
 
+    /**
+     * Function that controls tha actions performed by the buttons
+     * @param e event
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()){

@@ -8,12 +8,16 @@ public class MapDAO {
     public MapDAO() {
 
     }
+
+    /**
+     *Function that reads a .txt File and creates an initial Gamemap
+     * @return the Initial GameMap
+     */
     public GameMap startGameMap(){
         GameMap gameMap= null;
         try{
             String mapText= new String(Files.readAllBytes(Path.of(UsedPaths.MAP_PATH)));
-            /*TODO CAMBIAR \r*/
-            String[] lines= mapText.split("\r\n");
+            String[] lines= mapText.split("\n");
             int sizeX=Integer.parseInt(lines[0]);
             int sizeY= Integer.parseInt(lines[1]);
             int playerPositionX=0;

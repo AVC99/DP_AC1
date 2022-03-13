@@ -5,7 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class HpBar extends JProgressBar {
-
+    /**
+     * Set up of the HP bar
+     */
   public HpBar(){
       setPreferredSize(new Dimension(200,50));
       setMaximum(10);
@@ -14,7 +16,6 @@ public class HpBar extends JProgressBar {
       setBackground(Color.red);
       setForeground(Color.green);
       setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
-
   }
 
 }
